@@ -1,6 +1,8 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "UserInterface.h"
+#include "Authentication.h"
 
 #define box "#################################"
 #define leftMargin "    "
@@ -8,23 +10,23 @@
 #define MAX_LEN 40
 
 void showMainMenu(void);
-char * showAuthMenu(void);
-void showLoginMenu(void);
-void showRegisterMenu(void);
-void showContacts(bool all);
-void showAddContactMenu(void);
-void showRemoveContactMenu(void);
-void showEditContactMenu(void);
+static void showAuthMenu(void);
+static void showLoginMenu(void);
+static void showRegisterMenu(void);
+static void showContacts(bool all);
+static void showAddContactMenu(void);
+static void showRemoveContactMenu(void);
+static void showEditContactMenu(void);
 
+char password[MAX_LEN];
 
 void showMainMenu() {
-    char * password;
     bool isLoggedIn = false;
     bool isRunning = true;
     int choice;
     while (isRunning) {
         if (!isLoggedIn)
-            password = showAuthMenu();
+            showAuthMenu();
         puts(box);
         puts(leftMargin "What would you like to do?");
         puts(leftMargin " 1 Display all contacts");
@@ -36,6 +38,7 @@ void showMainMenu() {
         puts(leftMargin " 7 Exit");
         puts(box);
         scanf("%d", &choice);
+        while ((getchar()) != '\n');
         switch (choice) {
             case 1:
                 showContacts(true);
@@ -56,8 +59,7 @@ void showMainMenu() {
                 isLoggedIn = false;
                 break;
             case 7:
-                isRunning = false;
-                break;
+                exit(EXIT_SUCCESS);
             default:
                 puts(NOOP);
                 break;
@@ -68,7 +70,7 @@ void showMainMenu() {
 
 }
 
-char * showAuthMenu(void) {
+static void showAuthMenu(void) {
     int choice;
     while (true) {
         puts(box);
@@ -77,13 +79,14 @@ char * showAuthMenu(void) {
         puts(leftMargin "3 Login via Facebook");
         puts(box);
         scanf("%d", &choice);
+        while ((getchar()) != '\n');
         switch (choice) {
             case 1:
                 showLoginMenu();
-                break;
+                return;
             case 2:
                 showRegisterMenu();
-                break;
+                return;
             case 3:
                 puts(leftMargin "just kiddin', of course you can't login via Facebook");
                 break;
@@ -94,18 +97,64 @@ char * showAuthMenu(void) {
     }
 }
 
-void showContacts(bool all) {
+static void showRegisterMenu(void) {
+    char username[MAX_LEN];
+
+    // Use global variable to store password for authentication
+    extern char password[];
+
+    // Print menu
+    while (true) {
+        puts(box);
+        puts(leftMargin "Enter your username:");
+        scanf("%s", username);
+        while ((getchar()) != '\n');
+        if (userExists(username)) {
+            puts(leftMargin "User with this username already exists!");
+            continue;
+        }
+        break;
+    }
+    puts(box);
+    puts(leftMargin "Enter your password:");
+    puts(box);
+    scanf("%s", password);
+    addUser(username, password);
+    while ((getchar()) != '\n');
+}
+
+static void showLoginMenu(void) {
+    char username[MAX_LEN];
+
+    // Use global variable
+    extern char password[];
+    while (true) {
+        puts(box);
+        puts(leftMargin "Enter your name: ");
+        scanf("%s", &username);
+        while ((getchar()) != '\n');
+        puts(leftMargin "Enter your password: ");
+        scanf("%s", &password);
+        while ((getchar()) != '\n');
+        if (signIn(username, password))
+            break;
+    }
+}
+
+static void showContacts(bool all) {
 
 }
 
-void showAddContactMenu(void) {
+static void showAddContactMenu(void) {
 
 }
 
-void showRemoveContactMenu(void) {
+static void showRemoveContactMenu(void) {
 
 }
 
-void showEditContactMenu(void) {
+static void showEditContactMenu(void) {
 
 }
+
+

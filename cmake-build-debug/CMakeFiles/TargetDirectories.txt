@@ -1,3 +1,0 @@
-/home/ngibor/code/c-projects/c-primer-exercises/untitled/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/ngibor/code/c-projects/c-primer-exercises/untitled/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/ngibor/code/c-projects/c-primer-exercises/untitled/cmake-build-debug/CMakeFiles/untitled.dir
