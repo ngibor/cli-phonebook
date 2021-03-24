@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "UserInterface.h"
 #include "Authentication.h"
 
@@ -125,7 +126,7 @@ static void showRegisterMenu(void) {
 
 static void showLoginMenu(void) {
     char username[MAX_LEN];
-
+    const char *loginStatus;
     // Use global variable
     extern char password[];
     while (true) {
@@ -136,7 +137,9 @@ static void showLoginMenu(void) {
         puts(leftMargin "Enter your password: ");
         scanf("%s", &password);
         while ((getchar()) != '\n');
-        if (signIn(username, password))
+        loginStatus = signIn(username, password);
+        printf(leftMargin "%s\n", loginStatus);
+        if (!strcmp("Login successful", loginStatus))
             break;
     }
 }

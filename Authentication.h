@@ -10,4 +10,4 @@
 void openAuthFile();
 bool userExists(const char *username);
 void addUser(char *username, char *password);
-bool signIn(char *username, char *password);
+char *signIn(char *username, char *password);

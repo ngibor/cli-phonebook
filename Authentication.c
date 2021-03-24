@@ -12,7 +12,7 @@
 static FILE * loginPassFile;
 
 bool userExists(const char *);
-bool signIn(char *username, char *password);
+char *signIn(char *username, char *password);
 void addUser(char *username, char *password);
 
 
@@ -38,15 +38,50 @@ bool userExists(const char *username) {
 
 
 void addUser(char *username, char *password) {
-    rewind(loginPassFile);
     fseek(loginPassFile, 0, SEEK_END);
-    fputs(username, loginPassFile);
-    fputs('\n', loginPassFile);
-    fputs(password, loginPassFile);
-    fputs('\n', loginPassFile);
+    fprintf(loginPassFile, "%s\n%s\n", username, password);
     fclose(loginPassFile);
+//    fputs(username, loginPassFile);
+//    fputs('\n', loginPassFile);
+//    fputs(password, loginPassFile);
+//    fputs('\n', loginPassFile);
+//    fclose(loginPassFile);
 }
 
-bool signIn(char *username, char *password) {
-    return 0;
+char *signIn(char *username, char *password) {
+    // to store return value
+    char *message;
+
+    if ((loginPassFile = fopen("login-pass", "a+")) == NULL) {
+        puts("Can not open authentication file");
+        exit(EXIT_FAILURE);
+    }
+
+    char existingUsername[MAX_LEN];
+    char existingPassword[MAX_LEN];
+    int i = 0;
+
+    while (fgets(existingUsername, sizeof(existingUsername), loginPassFile)) {
+
+        // Remove newline character added by fgets
+        existingUsername[strcspn(existingUsername, "\n")] = 0;
+
+        if (i++ % 2 == 0) {
+            if (!strcmp(username, existingUsername)) {
+                fgets(existingPassword, sizeof(existingPassword), loginPassFile);
+                existingPassword[strcspn(existingPassword, "\n")] = 0;
+
+                if (!strcmp(password, existingPassword))
+                    message = "Login successful";
+                else
+                    message = "Wrong password";
+
+                break;
+            } else {
+                message = "Wrong username";
+            }
+        }
+    }
+    fclose(loginPassFile);
+    return message;
 }
