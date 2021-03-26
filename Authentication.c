@@ -1,12 +1,10 @@
 #include <stdbool.h>
-#include <bits/types/FILE.h>
 #include <stdio.h>
 #include <string.h>
 #include <openssl/sha.h>
 #include <stdlib.h>
 #include "Authentication.h"
-
-#define MAX_LEN 40
+#include "Constants.h"
 
 // File for login-password CRUD operations
 static FILE * loginPassFile;
@@ -41,12 +39,8 @@ void addUser(char *username, char *password) {
     fseek(loginPassFile, 0, SEEK_END);
     fprintf(loginPassFile, "%s\n%s\n", username, password);
     fclose(loginPassFile);
-//    fputs(username, loginPassFile);
-//    fputs('\n', loginPassFile);
-//    fputs(password, loginPassFile);
-//    fputs('\n', loginPassFile);
-//    fclose(loginPassFile);
 }
+
 
 char *signIn(char *username, char *password) {
     // to store return value
