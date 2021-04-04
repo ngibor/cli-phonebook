@@ -12,13 +12,15 @@ void showMainMenu(void);
 static void showAuthMenu(void);
 static void showLoginMenu(void);
 static void showRegisterMenu(void);
-static void showContacts(bool all);
+static void showAllContacts();
+static void showSearchMenu();
 static void showAddContactMenu(void);
 static void showRemoveContactMenu(void);
 static void showEditContactMenu(void);
 
 char username[MAX_LEN];
 char password[MAX_LEN];
+
 typedef struct contact {
     char name[MAX_LEN];
     char number[MAX_LEN];
@@ -47,10 +49,10 @@ void showMainMenu() {
         while ((getchar()) != '\n');
         switch (choice) {
             case 1:
-                showContacts(true);
+                showAllContacts();
                 break;
             case 2:
-                showContacts(false);
+                showSearchMenu();
                 break;
             case 3:
                 showAddContactMenu();
@@ -149,16 +151,35 @@ static void showLoginMenu(void) {
     }
 }
 
-static void showContacts(bool all) {
-    int i = 0;
+static void showAllContacts() {
+
     struct contact *allContacts;
-    allContacts = getAllContacts();
+    int size;
+    allContacts = readAllContacts();
+    size = getSize();
     puts(BOX);
     puts(LEFT_MARGIN "Your contacts:");
-    while ((allContacts + i) != NULL) {
-        printf("%40s %40s", (allContacts + i)->name, (allContacts + i)->number);
+    for (int i = 0; i < size; ++i) {
+        printf("%15s %15s\n", (allContacts + i)->name, (allContacts + i)->number);
     }
+}
 
+static void showSearchMenu() {
+    int i = 0;
+    char name[MAX_LEN];
+    struct contact **contacts;
+    puts(BOX);
+    puts(LEFT_MARGIN "Enter name:");
+    scanf("%s", name);
+    contacts = findContactsByName(name);
+    while ((getchar()) != '\n');
+    puts(BOX);
+    puts("Result:");
+    while (contacts[i] != NULL) {
+        printf("%15s %15s\n", contacts[i]->name, contacts[i]->number);
+        i++;
+    }
+    free(contacts);
 }
 
 static void showAddContactMenu(void) {
@@ -175,11 +196,31 @@ static void showAddContactMenu(void) {
 }
 
 static void showRemoveContactMenu(void) {
-
+    char name[MAX_LEN];
+    puts(BOX);
+    puts(LEFT_MARGIN "Enter a name of contact to delete:");
+    scanf("%s", name);
+    while ((getchar()) != '\n');
+    if (deleteContact(name))
+        puts(LEFT_MARGIN "Contact was deleted successfully");
+    else
+        puts(LEFT_MARGIN "Contact does not exist");
 }
 
 static void showEditContactMenu(void) {
-
+    char name[MAX_LEN];
+    char number[MAX_LEN];
+    puts(BOX);
+    puts(LEFT_MARGIN"Enter name of contact to edit");
+    scanf("%s", name);
+    while ((getchar()) != '\n');
+    puts(LEFT_MARGIN"Enter new number");
+    scanf("%s", number);
+    while ((getchar()) != '\n');
+    if (editContact(name, number))
+        puts("Contact was successfully edited");
+    else
+        puts("Contact does not exists");
 }
 
 
