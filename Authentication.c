@@ -36,8 +36,18 @@ bool userExists(const char *username) {
 
 
 void addUser(char *username, char *password) {
+    //hash password
+    char *hashedPass = malloc(65 * sizeof(char));
+    unsigned char *hash = SHA256(password, strlen(password), 0);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        sprintf(hashedPass + 2*i, "%02x", hash[i]);
+    }
+
+    //write password
     fseek(loginPassFile, 0, SEEK_END);
-    fprintf(loginPassFile, "%s\n%s\n", username, password);
+    fprintf(loginPassFile, "%s\n%s\n", username, hashedPass);
+    printf("saved pass: %s\n", hashedPass);
+    free(hashedPass);
     fclose(loginPassFile);
 }
 
@@ -46,13 +56,21 @@ char *signIn(char *username, char *password) {
     // to store return value
     char *message;
 
+    //hash password
+    char *hashedPass = malloc(65 * sizeof(char));
+    unsigned char *hash = SHA256(password, strlen(password), 0);
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+        sprintf(hashedPass + 2*i, "%02x", hash[i]);
+    }
+    printf("digest len %d\n", SHA256_DIGEST_LENGTH);
+
     if ((loginPassFile = fopen("login-pass", "a+")) == NULL) {
         puts("Can not open authentication file");
         exit(EXIT_FAILURE);
     }
 
     char existingUsername[MAX_LEN];
-    char existingPassword[MAX_LEN];
+    char existingPassword[65];
     int i = 0;
 
     while (fgets(existingUsername, sizeof(existingUsername), loginPassFile)) {
@@ -64,18 +82,18 @@ char *signIn(char *username, char *password) {
             if (!strcmp(username, existingUsername)) {
                 fgets(existingPassword, sizeof(existingPassword), loginPassFile);
                 existingPassword[strcspn(existingPassword, "\n")] = 0;
-
-                if (!strcmp(password, existingPassword))
+                printf("hashed pass: %s\nexisting:  %s\n", hashedPass, existingPassword);
+                if (!strcmp(hashedPass, existingPassword))
                     message = "Login successful";
                 else
                     message = "Wrong password";
-
                 break;
             } else {
                 message = "Wrong username";
             }
         }
     }
+    free(hashedPass);
     fclose(loginPassFile);
     return message;
 }
