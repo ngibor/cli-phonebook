@@ -9,3 +9,4 @@ struct contact getContactByName(const char *name);
 struct contact **findContactsByName(const char *name);
 bool editContact(const char *name, const char *number);
 int getSize();
+void logout();

@@ -36,10 +36,11 @@ bool userExists(const char *username) {
 
 
 void addUser(char *username, char *password) {
+    int i;
     //hash password
     char *hashedPass = malloc(65 * sizeof(char));
     unsigned char *hash = SHA256(password, strlen(password), 0);
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+    for (i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
         sprintf(hashedPass + 2*i, "%02x", hash[i]);
     }
 
@@ -55,11 +56,11 @@ void addUser(char *username, char *password) {
 char *signIn(char *username, char *password) {
     // to store return value
     char *message;
-
+    int i;
     //hash password
     char *hashedPass = malloc(65 * sizeof(char));
     unsigned char *hash = SHA256(password, strlen(password), 0);
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
+    for (i = 0; i < SHA256_DIGEST_LENGTH; ++i) {
         sprintf(hashedPass + 2*i, "%02x", hash[i]);
     }
     printf("digest len %d\n", SHA256_DIGEST_LENGTH);
@@ -71,7 +72,7 @@ char *signIn(char *username, char *password) {
 
     char existingUsername[MAX_LEN];
     char existingPassword[65];
-    int i = 0;
+    i = 0;
 
     while (fgets(existingUsername, sizeof(existingUsername), loginPassFile)) {
 

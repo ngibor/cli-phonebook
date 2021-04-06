@@ -65,6 +65,7 @@ void showMainMenu() {
                 break;
             case 6:
                 isLoggedIn = false;
+                logout();
                 break;
             case 7:
                 exit(EXIT_SUCCESS);
@@ -135,31 +136,32 @@ static void showLoginMenu(void) {
     const char *loginStatus;
     // Use global variable
     extern char username[];
-    extern char password[];
-    while (true) {
+    char password[MAX_LEN];
+    int loggedIn = 0;
+    while (!loggedIn) {
         puts(BOX);
         puts(LEFT_MARGIN "Enter your name: ");
         scanf("%s", &username);
         while ((getchar()) != '\n');
         puts(LEFT_MARGIN "Enter your password: ");
-        scanf("%s", &password);
-        while ((getchar()) != '\n');
+        gets(password);
         loginStatus = signIn(username, password);
         printf(LEFT_MARGIN "%s\n", loginStatus);
         if (!strcmp("Login successful", loginStatus))
-            break;
+            loggedIn = 1;
+        printf("logedin: %d\n", loggedIn);
     }
 }
 
 static void showAllContacts() {
 
     struct contact *allContacts;
-    int size;
+    int i, size;
     allContacts = readAllContacts();
     size = getSize();
     puts(BOX);
     puts(LEFT_MARGIN "Your contacts:");
-    for (int i = 0; i < size; ++i) {
+    for (i = 0; i < size; ++i) {
         printf("%15s %15s\n", (allContacts + i)->name, (allContacts + i)->number);
     }
 }
@@ -174,7 +176,9 @@ static void showSearchMenu() {
     contacts = findContactsByName(name);
     while ((getchar()) != '\n');
     puts(BOX);
-    puts("Result:");
+    printf("Results for query \"");
+    printf(name);
+    printf("\" are: \n%15s %15s\n", "name", "number");
     while (contacts[i] != NULL) {
         printf("%15s %15s\n", contacts[i]->name, contacts[i]->number);
         i++;

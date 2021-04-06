@@ -45,7 +45,9 @@ struct contact *readAllContacts(void) {
         puts("Can not open database file");
         exit(EXIT_FAILURE);
     }
+    printf("Contacts were read:\n%15s %15s\n", "name", "number");
     while (size < PHONEBOOK_SIZE && (fread(&phonebook[size], sizeof(struct contact), 1, userFile) == 1)) {
+        printf("%15s %15s\n", phonebook[size].name, phonebook[size].number);
         size++;
     }
     fclose(userFile);
@@ -60,7 +62,8 @@ int getSize() {
 }
 
 int findContactIndex(const char *name) {
-    for (int i = 0; i < size; ++i) {
+    int i;
+    for (i = 0; i < size; ++i) {
         if (!strcmp(name, phonebook[i].name))
             return i;
     }
@@ -81,11 +84,12 @@ struct contact **findContactsByName(const char *name) {
 
 
 void writeAllContacts() {
+    int i;
     if ((userFile = fopen(username, "w+b")) == NULL) {
         puts("Can not open database file");
         exit(EXIT_FAILURE);
     }
-    for (int i = 0; i < size; ++i) {
+    for (i = 0; i < size; ++i) {
         fwrite(&phonebook[i], sizeof(struct contact), 1, userFile);
     }
     fclose(userFile);
@@ -117,4 +121,8 @@ bool editContact(const char *name, const char *number) {
     phonebook[toEdit] = temp;
     writeAllContacts();
     return true;
+}
+
+void logout() {
+    contactsWereRead = false;
 }
