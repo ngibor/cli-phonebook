@@ -172,7 +172,7 @@ static void showSearchMenu() {
     struct contact **contacts;
     puts(BOX);
     puts(LEFT_MARGIN "Enter name:");
-    scanf("%s", name);
+    gets(name);
     contacts = findContactsByName(name);
     while ((getchar()) != '\n');
     puts(BOX);
